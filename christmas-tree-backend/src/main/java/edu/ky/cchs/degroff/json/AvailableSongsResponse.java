@@ -4,7 +4,6 @@ import java.util.List;
 
 public class AvailableSongsResponse
     {
-
     public AvailableSongsResponse( List<AvailableSong> songs )
         {
         super();

@@ -110,8 +110,8 @@ public class TreeService
                 }
             catch ( InterruptedException e )
                 {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error( "Thread sleep interrupted", e );
+                Thread.currentThread().interrupt();
                 }
             logger.info( "Is thread cancelled? [{}][{}]", future.isCancelled(), future.isDone() );
             }

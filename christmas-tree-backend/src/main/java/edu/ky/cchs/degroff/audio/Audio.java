@@ -27,14 +27,6 @@ public class Audio
         {
         logger.info( "Running new song [{}]", mp3Resource.getFilename() );
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool( 1 );
-        // if ( runningSong != null && !runningSong.isDone() &&
-        // !runningSong.isCancelled() && player != null )
-        // {
-        // System.out.println( "Cancelling song" );
-        // player.close();
-        // runningSong.cancel( true );
-        // System.out.println( "DONE Cancelling song" );
-        // }
 
         Future f = executor.submit( () -> {
         try ( InputStream mp3In = mp3Resource.getInputStream() )
