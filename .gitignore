@@ -1,3 +1,30 @@
+# Custom artifacts
+*.out
+*.mp3
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Gradle artifacts
+.gradle
+/build/
+/bin/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Package backups
+package.backup.json
+package.hold.json
+package-lock.json
+
 # Logs
 logs
 *.log

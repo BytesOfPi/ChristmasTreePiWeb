@@ -1,0 +1,63 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+server:
+  port: 8080
+  servlet:
+    context-path: "/api"
+  tomcat:
+    accesslog:
+      buffered: true
+      directory: ${TOMCAT_ACCESSLOG_DIR:e:/temp}
+      enabled: ${TOMCAT_ACCESSLOG_ENABLED:true}
+      file-date-format: .yyyy-MM-dd
+      pattern: "%h %l %u %t '%r' %s %b %D"
+      prefix: access_log
+      rename-on-rotate: false
+      request-attributes-enabled: true
+      rotate: true
+      suffix: .log
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+
+---
+
+spring:
+  profiles: dev
+tree-service:
+  virtual: true
+  loadInstruct:
+    - "classpath*:**/instructions/*.txt"
+    - "file:*.txt"
+    - "file:./instructions/*.txt"
+  loadMusic:
+    - "classpath*:**/music/*.mp3"
+    - "classpath*:**/*.mp3"
+    - "file:*.mp3"
+    - "file:./music/*.mp3"
+
+---
+
+spring:
+  profiles: pi
+tree-service:
+  virtual: false
+  loadInstruct:
+    - "classpath*:**/instructions/*.txt"
+    - "file:*.txt"
+    - "file:./instructions/*.txt"
+  loadMusic:
+    - "classpath*:**/music/*.mp3"
+    - "classpath*:**/*.mp3"
+    - "file:*.mp3"
+    - "file:./music/*.mp3"

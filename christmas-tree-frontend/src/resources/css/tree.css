@@ -1,0 +1,91 @@
+/*!
+ * Compiled CSS
+*/
+
+
+  .game_gear {
+    max-width: 30rem;
+  }
+
+/* ############################################################################
+ * Game background colors
+ *
+ */  
+  /* Team Green */
+  .bg-green {
+    background-color: #77B300 !important;
+    color: #FFFFFF;
+  }
+  
+  a.bg-green:hover, a.bg-green:focus,
+  button.bg-green:hover,
+  button.bg-green:focus {
+    background-color: #558000 !important;
+    color: #FFFFFF;
+  }
+
+  /* Team Orange */
+  .bg-orange {
+    background-color: #fd7e14 !important;
+    color: #000000;
+  }
+  a.bg-orange:hover, a.bg-orange:focus,
+  button.bg-orange:hover,
+  button.bg-orange:focus {
+    background-color: #fdbf14 !important;
+    color: #000000;
+  }
+
+  /* Team Blue */
+  .bg-blue {
+    background-color: #2A9FD6 !important;
+    color: #FFFFFF;
+  }
+    a.bg-blue:hover, a.bg-blue:focus,
+  button.bg-blue:hover,
+  button.bg-blue:focus {
+    background-color: #6610f2 !important;
+    color: #FFFFFF;
+  }
+
+  /* Team Red */
+  .bg-red {
+    background-color: #CC0000 !important;
+    color: #FFFFFF;
+  }
+    a.bg-red:hover, a.bg-red:focus,
+  button.bg-red:hover,
+  button.bg-red:focus {
+    background-color: #F80E0E !important;
+    color: #FFFFFF;
+  }
+
+  /* Team grey */
+  .bg-grey {
+    background-color: grey !important;
+    color: #FFFFFF;
+  }
+
+  .Modal {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
+    border: 1px solid rgb(204, 204, 204);
+    background: #6610f2;
+    background-color: #6610f2;
+    color: white;
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    padding: 20px;
+  }
+  .Overlay {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: grey;
+  }
