@@ -1,8 +1,12 @@
 package edu.ky.cchs.degroff.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +28,7 @@ public class TreeController
         return svc.refresh();
         }
 
-    @GetMapping( value = "/maint/{milli}" )
+    @GetMapping( value = "/maint/{milliSync}" )
     public TreeResponse milliSync( @PathVariable long milliSync )
         {
         return svc.milliSync( milliSync );
@@ -53,6 +57,12 @@ public class TreeController
     public TreeResponse playSong( @PathVariable int id )
         {
         return svc.playSong( id );
+        }
+
+    @PostMapping( value = "/song/playlist" )
+    public TreeResponse playList( @RequestBody List<Integer> request )
+        {
+        return svc.playList( request );
         }
 
     @GetMapping( value = "/song/stop" )

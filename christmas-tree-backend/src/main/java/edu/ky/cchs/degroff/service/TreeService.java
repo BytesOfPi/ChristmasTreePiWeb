@@ -2,6 +2,7 @@ package edu.ky.cchs.degroff.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -43,8 +44,10 @@ public class TreeService
 
     private ITree tree;
 
-    private Future runningInstruct = null;
+    // private Future runningInstruct = null;
     private Future runningSong = null;
+
+    private List<Future> runningInstructions = new ArrayList<>();
 
     @Autowired
     private TreeResourceUtil resourceUtil;
@@ -53,26 +56,14 @@ public class TreeService
     private ThreadPoolExecutor songQueue;
 
     @Bean
-    public ThreadPoolExecutor getThreadPool()
+    public ThreadPoolExecutor genThreadPool()
         {
         return (ThreadPoolExecutor) Executors.newFixedThreadPool( 1 );
         }
 
     public TreeResponse playSong( int id )
         {
-        MusicSet set = sets.get( id - 1 );
-        logger.info( "About to run [{}][{}]", id, set.getMusicFile() );
-
-        // ----------------------------------------------------------------------
-        // Stop the last running song...
-        stopLastRun();
-
-        // ----------------------------------------------------------------------
-        // Start playing the new song
-        // songQueue = getThreadPool();
-        runningInstruct = songQueue.submit( () -> runSetThread( set ) );
-
-        return new TreeResponse( "200", "Playing: " + set.getMusicFile() );
+        return playList( Arrays.asList( new Integer[] { Integer.valueOf( id ) } ) );
         }
 
     public TreeResponse stopLastRun()
@@ -86,10 +77,19 @@ public class TreeService
             play.close();
             }
         // ----------------------------------------------------------------------
-        // Stop the Song future and Instruction future
+        // Stop the Song future
         stopRunningProcess( runningSong, "Song" );
-        stopRunningProcess( runningInstruct, "Instruct" );
+
+        // ----------------------------------------------------------------------
+        // Loop backward through the queued instructions and stop them
+        // Once they are done, clear out the queue
+        for ( int i = runningInstructions.size() - 1; i >= 0; i-- )
+            {
+            stopRunningProcess( runningInstructions.get( i ), "Instruct" );
+            }
+        runningInstructions.clear();
         songQueue.purge();
+        songQueue.getQueue().clear();
 
         return new TreeResponse( "200", "Stopped song " );
         }
@@ -119,26 +119,40 @@ public class TreeService
         // ----------------------------------------------------------------------
         // Pull off the first instruction
         System.out.println( "Running music/light set [" + set.getInstructionFile() + "]" );
-        int iCnt = 0;
+        if ( Thread.currentThread().isInterrupted() )
+            {
+            logger.info( "Instruction terminated early" );
+            return;
+            }
+
         List<Instruction> instructions = set.getInstructions();
+        int iCnt = 0, iSize = instructions.size();
         Instruction nextInstruct = instructions.get( iCnt++ );
         Long nextTime = nextInstruct.getTime();
 
         // ----------------------------------------------------------------------
-        // Start the timer
-        long startTime = System.currentTimeMillis() + milliSync;
-        // ----------------------------------------------------------------------
         // Start playing the right file
-        runningSong = Audio.playMP3New( set.getMusicResource(), runningSong );
+        runningSong = Audio.playMP3New( set.getMusicResource() );
+
+        // ----------------------------------------------------------------------
+        // Start the timer
+        long startTime = System.currentTimeMillis();
 
         // ----------------------------------------------------------------------
         // Continue to loop while there are instructions
-        while ( iCnt <= instructions.size() )
+        while ( iCnt <= iSize )
             {
             // ----------------------------------------------------------------------
             // if the next instruction is now or passed...
             if ( nextTime <= System.currentTimeMillis() - startTime )
                 {
+                // ----------------------------------------------------------------------
+                // Execute instructions
+                nextInstruct.setTree( tree );
+                // ----------------------------------------------------------------------
+                // Get Next Instruction
+                nextInstruct = instructions.get( iCnt++ );
+                nextTime = nextInstruct.getTime() + milliSync;
                 // ----------------------------------------------------------------------
                 // Only check if thread is interrupted if a new instruction is to be
                 // carried out so it doesn't slow down
@@ -147,14 +161,6 @@ public class TreeService
                     logger.info( "Breaking early from [{}]", set.getInstructionFile() );
                     break;
                     }
-                Long holdTime = nextTime;
-                // ----------------------------------------------------------------------
-                // Execute instructions
-                nextInstruct.setTree( tree );
-                // ----------------------------------------------------------------------
-                // Get Next Instruction
-                nextInstruct = instructions.get( iCnt++ );
-                nextTime = nextInstruct.getTime() + milliSync;
                 }
 
             }
@@ -232,7 +238,7 @@ public class TreeService
     public void shutdown()
         {
         logger.info( "Shutting down... " );
-        tree.shutdown();
+        if ( tree != null ) tree.shutdown();
         logger.info( "Shutting down Complete " );
         }
 
@@ -260,5 +266,31 @@ public class TreeService
         loadMusicSets();
         logger.info( msg.toString() );
         return new TreeResponse( "200", msg.toString() );
+        }
+
+    public TreeResponse playList( List<Integer> ids )
+        {
+        // ----------------------------------------------------------------------
+        // Stop the last running song...
+        stopLastRun();
+
+        // ----------------------------------------------------------------------
+        // If queue is taking too long to terminate, get a new thread pool
+        if ( songQueue.getActiveCount() > 0 )
+            {
+            songQueue = genThreadPool();
+            }
+
+        // ----------------------------------------------------------------------
+        // Start playing the new song
+        ids.stream().forEach( id -> {
+        // ----------------------------------------------------------------------
+        // Load the new song into the queue
+        MusicSet set = sets.get( id - 1 );
+        logger.info( "About to run [{}][{}]", id, set.getMusicFile() );
+        runningInstructions.add( songQueue.submit( () -> runSetThread( set ) ) );
+        } );
+
+        return new TreeResponse( "200", "Loaded songs into queue." );
         }
     }
