@@ -2,6 +2,7 @@ import React from 'react';
 import LightSelection from '../../component/LightSelection/LightSelection';
 import MusicSelection from '../../component/MusicSelection/MusicSelection';
 import Maint from '../../component/Maint/Maint';
+import PlayList from '../../component/PlayList/PlayList';
 
 /* openTab()
  * This function handles showing / hiding tab content on the admin page based on
@@ -42,7 +43,10 @@ const Tree = () => (
 							<a id="tabHome" class="nav-link active" data-toggle="tab" href="#home" onClick={openTab}>Light Selection</a>
 						</li>
 						<li class="nav-item">
-							<a id="tabTeams" class="nav-link" data-toggle="tab" href="#profile" onClick={openTab}>Music Selection</a>
+							<a id="tabMusic" class="nav-link" data-toggle="tab" href="#profile" onClick={openTab}>Music Selection</a>
+						</li>
+						<li class="nav-item">
+							<a id="tabPlayList" class="nav-link" data-toggle="tab" href="#profile" onClick={openTab}>Play List</a>
 						</li>
 						<li class="nav-item">
 							<a id="tabMaint" class="nav-link" href="#" onClick={openTab}>Maint</a>
@@ -52,8 +56,11 @@ const Tree = () => (
 						<div id="tabCHome" class="tab-pane fade show active">
 							<LightSelection />
 						</div>
-						<div id="tabCTeams" class="tab-pane fade">
+						<div id="tabCMusic" class="tab-pane fade">
 							<MusicSelection />
+						</div>
+						<div id="tabCPlayList" class="tab-pane fade">
+							<PlayList />
 						</div>
 						<div id="tabCMaint" class="tab-pane fade">
 							<Maint />
