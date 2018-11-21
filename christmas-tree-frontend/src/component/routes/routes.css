@@ -1,7 +1,14 @@
-img.resize {
+img.resize_old {
     display: block;
     margin-left: auto;
     margin-right: auto;
     max-width:85%;
     max-height:85%;
+  }
+  img.resize {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width:100px;
+    max-height:100px;
   }

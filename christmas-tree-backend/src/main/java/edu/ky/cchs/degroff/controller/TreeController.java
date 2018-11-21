@@ -55,4 +55,10 @@ public class TreeController
         return svc.playSong( id );
         }
 
+    @GetMapping( value = "/song/stop" )
+    public TreeResponse stopLastRun()
+        {
+        return svc.stopLastRun();
+        }
+
     }

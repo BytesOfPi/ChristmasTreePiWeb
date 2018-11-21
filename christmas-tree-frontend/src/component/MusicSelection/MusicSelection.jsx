@@ -14,7 +14,10 @@ class MusicSelection extends React.Component {
 		this.loadSongs = this.loadSongs.bind(this);
 		this.genSongOptions = this.genSongOptions.bind(this);
 		this.genSongSelect = this.genSongSelect.bind(this);
+		
 		this.handleSongSubmit = this.handleSongSubmit.bind(this);
+		this.handleStopSong = this.handleStopSong.bind(this);
+		this.handleRefreshList = this.handleRefreshList.bind(this);
 	}
 	//---------------------------------------------------------------------
 	// When you reach the page...
@@ -26,7 +29,8 @@ class MusicSelection extends React.Component {
 	loadSongs() {
 		fetch('api/tree/song/get')
 			.then(res => ( res.ok ) ? res.json() : [{name: 'FAILED TO LOAD'}])
-			.then(data => this.setState({songs: data.songs}))
+			.then(data => {  console.log(data); this.setState({songs: data.songs});
+			})
 			.catch( error => console.log(error) );
 	}
 	onKeyPress(e) {
@@ -34,7 +38,7 @@ class MusicSelection extends React.Component {
 			this.handleSongSubmit();
 		}
 	}
-	
+
 	//---------------------------------------------------------------------
 	// Generate Music Selection dropdown
 	handleSongSubmit() {
@@ -48,6 +52,35 @@ class MusicSelection extends React.Component {
 			.then(data => console.log(data))
 			.catch( error => console.log(error) );
 	}
+
+	//---------------------------------------------------------------------
+	// Stop Current Song
+	handleStopSong() {		
+		//---------------------------------------------------------------------
+		// Stop song
+		fetch(`api/tree/song/stop`)
+			.then(res => ( res.ok ) ? res.json() : [{name: 'FAILED TO LOAD'}])
+			.then(data => console.log(data))
+			.catch( error => console.log(error) );
+	}
+
+	//---------------------------------------------------------------------
+	// Refresh dropdown
+	handleRefreshList() {
+		//---------------------------------------------------------------------
+		// Send message to refresh list data then refresh dropdown
+		fetch(`api/tree/maint/refresh`)
+			.then(res => ( res.ok ) ? res.json() : [{name: 'FAILED TO LOAD'}])
+			.then(data => { 
+				//---------------------------------------------------------------------
+				// Refresh dropdown
+				console.log(data);
+				this.loadSongs();
+			})
+			.catch( error => console.log(error) );
+
+	}
+
 	//---------------------------------------------------------------------
 	// Generate Music Selection dropdown
 	genSongOptions(songs) {
@@ -64,7 +97,9 @@ class MusicSelection extends React.Component {
                     Music: {this.genSongSelect()}
 					</div>
 					<div class="form-group row">
-						<button type="button" className="btn btn-primary" onClick={this.handleSongSubmit} >Submit</button>
+						<div className="col-lg-3 col-md-3 col-sm-3"><button type="button" className="btn btn-primary" onClick={this.handleSongSubmit} >Run Song</button></div>
+						<div className="col-lg-3 col-md-3 col-sm-3"><button type="button" className="btn btn-primary" onClick={this.handleStopSong} >Stop Song</button></div>
+						<div className="col-lg-3 col-md-3 col-sm-3"><button type="button" className="btn btn-primary" onClick={this.handleRefreshList} >Refresh List</button></div>
 					</div>
 				</div>
 			</div>

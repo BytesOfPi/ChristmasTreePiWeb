@@ -75,7 +75,7 @@ public class TreeService
         return new TreeResponse( "200", "Playing: " + set.getMusicFile() );
         }
 
-    private void stopLastRun()
+    public TreeResponse stopLastRun()
         {
         // ----------------------------------------------------------------------
         // Get Audio Player and stop playing music
@@ -90,16 +90,14 @@ public class TreeService
         stopRunningProcess( runningSong, "Song" );
         stopRunningProcess( runningInstruct, "Instruct" );
         songQueue.purge();
+
+        return new TreeResponse( "200", "Stopped song " );
         }
 
     private void stopRunningProcess( Future future, String msg )
         {
         // ----------------------------------------------------------------------
         // If song is running, stop it...
-        if ( future != null )
-            {
-            logger.info( "HEY [{}][{}][{}]", msg, future.isCancelled(), future.isDone() );
-            }
         if ( future != null && (!future.isDone() || !future.isCancelled()) )
             {
             logger.info( "Trying to cancel [{}][{}]", future.isCancelled(), future.isDone() );
@@ -113,7 +111,6 @@ public class TreeService
                 logger.error( "Thread sleep interrupted", e );
                 Thread.currentThread().interrupt();
                 }
-            logger.info( "Is thread cancelled? [{}][{}]", future.isCancelled(), future.isDone() );
             }
         }
 
@@ -153,7 +150,6 @@ public class TreeService
                 Long holdTime = nextTime;
                 // ----------------------------------------------------------------------
                 // Execute instructions
-                logger.info( "Run next instructions" );
                 nextInstruct.setTree( tree );
                 // ----------------------------------------------------------------------
                 // Get Next Instruction

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactModal from 'react-modal';
 
 import { Header, Main } from './component/routes/routes';
-
+import './resources/images/favicon.png'
 import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
 import './resources/css/tree.css';
