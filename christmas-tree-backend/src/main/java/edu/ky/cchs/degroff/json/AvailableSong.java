@@ -5,14 +5,26 @@ public class AvailableSong
 
     private String name;
     private String title;
+    private String category;
     private int id;
 
-    public AvailableSong( String name, String title, int id )
+    public AvailableSong( String name, String title, String category, int id )
         {
         super();
         this.name = name;
         this.title = title;
+        this.category = category;
         this.id = id;
+        }
+
+    public String getCategory()
+        {
+        return category;
+        }
+
+    public void setCategory( String category )
+        {
+        this.category = category;
         }
 
     public String getName()

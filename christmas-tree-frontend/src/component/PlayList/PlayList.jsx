@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext } from 'react-beautiful-dnd';
+import SongList from './SongList';
+import SongSelections from './SongSelections';
+import { Object } from 'es6-shim';
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -28,8 +31,6 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     return result;
 };
 
-const grid = 8;
-
 /**
  * DND dynamic class
  * These methods dynamically change the dragged item's class to show it's being
@@ -42,36 +43,22 @@ const getPlaylistClass = (isDragging) => (
 	isDragging ? 'card text-white bg-success mb-3' : 'card text-white bg-primary mb-3'
 );
 
-const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'lightblue' : 'lightgrey',
-    padding: grid,
-    width: 250
-});
-
 
 class PlayList extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			items: [],
 			playlist: [],
-			/**
-			 * A semi-generic way to handle multiple lists. Matches
-			 * the IDs of the droppable container to the names of the
-			 * source arrays stored in the state.
-			 */
-			id2List: {
-				droppable: 'items',
-				droppable2: 'playlist'
-			}
+			categories: {}
 		};
 		//---------------------------------------------------------------------
 		// Bind methods to this component
 		this.getList = this.getList.bind(this);
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.loadSongs = this.loadSongs.bind(this);
+		this.buildState = this.buildState.bind(this);
 		
-		this.handleDump = this.handleDump.bind(this);
+		this.handleStopSong = this.handleStopSong.bind(this);
 		this.handleRefresh = this.handleRefresh.bind(this);
 		this.handlePlay = this.handlePlay.bind(this);
 	}
@@ -89,7 +76,7 @@ class PlayList extends Component {
 	 * Quick utility function to map the droppable DOM object to the state values
 	 */
     getList(id) {
-		return this.state[this.state.id2List[id]];
+		return (id === 'playlist') ? this.state[id] : this.state.categories[id];
 	}
 
 	/**
@@ -103,14 +90,31 @@ class PlayList extends Component {
 		fetch('api/tree/song/get')
 			.then(res => ( res.ok ) ? res.json() : [{name: 'FAILED TO LOAD'}])
 			.then(data => {
-				let items = [];
-				data.songs.map( song => {
-					items.push({id: song.id, content: song.name});
-				}); 
+				//---------------------------------------------------------------------
+				// Lowercase categories, just for consistency
+				let categories = {};
+				Object.entries(data.categories).forEach( entry => {
+					categories[entry[0].toLowerCase()]=entry[1];
+				});
 		
-				this.setState({items, playlist:[] });
+				//---------------------------------------------------------------------
+				// 0 out playlist and set categories
+				this.setState({ playlist: [], categories });
 			})
 			.catch( error => console.log(error) );
+	}
+
+	/**
+	 * Build State
+	 * This method streamlines recreating this component's state based on the drag n drop changes.
+	 */
+	buildState( id, values ) {
+		// Override target playlist if playlist was reordered
+		if (id === 'playlist') return { playlist: values };
+		// Otherwise, clone categories and override only the list modified
+		let { categories } = this.state;
+		categories[id] = values;
+		return { categories };
 	}
 
 	/**
@@ -120,6 +124,7 @@ class PlayList extends Component {
     onDragEnd(result){
         const { source, destination } = result;
 
+				//---------------------------------------------------------------------
         // dropped outside the list
         if (!destination) {
             return;
@@ -133,32 +138,34 @@ class PlayList extends Component {
                 destination.index
             );
 
-            let state = { items };
-
-            if (source.droppableId === 'droppable2') {
-                state = { playlist: items };
-            }
-
-            this.setState(state);
+			this.setState( this.buildState(source.droppableId, items) );
 		} 
-		// If dropped in the other list
+		// If dropped in the other list, move items
 		else {
             const result = move(
                 this.getList(source.droppableId),
                 this.getList(destination.droppableId),
                 source,
                 destination
-            );
-
-            this.setState({
-                items: result.droppable,
-                playlist: result.droppable2
-            });
+			);
+			
+			let sourceState = this.buildState(source.droppableId, result[source.droppableId]);
+			let destinationState = this.buildState(destination.droppableId, result[destination.droppableId]);
+			// Spread not working... not ES6 :( )
+			// this.setState( {...sourceState, ...destinationState} );
+			this.setState( Object.assign(sourceState, destinationState) );
         }
     };
 
-	handleDump() {
-		console.log(this.state, this.state.items, this.state.playlist);
+	//---------------------------------------------------------------------
+	// Stop Current Song
+	handleStopSong() {		
+		//---------------------------------------------------------------------
+		// Stop song
+		fetch(`api/tree/song/stop`)
+			.then(res => ( res.ok ) ? res.json() : [{name: 'FAILED TO LOAD'}])
+			.then(data => console.log(data))
+			.catch( error => console.log(error) );
 	}
 
 	handleRefresh() {
@@ -175,13 +182,11 @@ class PlayList extends Component {
 	}
 
 	handlePlay() {
-		console.log('TODO');
 		let pList = [];
 		this.state.playlist.map( song => {
 			pList.push(song.id);
 		}); 
-		
-		console.log(pList);
+
 		//---------------------------------------------------------------------
 		// Refresh list
 		fetch('api/tree/song/playlist', {
@@ -208,66 +213,21 @@ class PlayList extends Component {
 			</thead>
 			<tbody>
 				<tr class="table-secondary">
-					<td>					
-						<Droppable droppableId="droppable">
-						{(provided, snapshot) => (
-							<div
-								ref={provided.innerRef}
-								style={getListStyle(snapshot.isDraggingOver)}>
-								{this.state.items.map((item, index) => (
-									<Draggable
-										key={item.id}
-										draggableId={item.id}
-										index={index}>
-										{(provided, snapshot) => (
-											<div
-												ref={provided.innerRef}
-												{...provided.draggableProps}
-												{...provided.dragHandleProps}
-												className={getItemClass(snapshot.isDragging)}
-												style={provided.draggableProps.style}>
-												{item.content}
-											</div>
-										)}
-									</Draggable>
-								))}
-								{provided.placeholder}
-							</div>
-						)}
-						</Droppable></td>
 					<td>
-						<Droppable droppableId="droppable2">
-							{(provided, snapshot) => (
-								<div
-									ref={provided.innerRef}
-									style={getListStyle(snapshot.isDraggingOver)}>
-									{this.state.playlist.map((item, index) => (
-										<Draggable
-											key={item.id}
-											draggableId={item.id}
-											index={index}>
-											{(provided, snapshot) => (
-												<div
-													ref={provided.innerRef}
-													{...provided.draggableProps}
-													{...provided.dragHandleProps}
-													className={getPlaylistClass(snapshot.isDragging)}
-													style={provided.draggableProps.style}>
-													{item.content}
-												</div>
-											)}
-										</Draggable>
-									))}
-									{provided.placeholder}
-								</div>
-							)}
-						</Droppable>
+						<SongSelections 
+							categories={this.state.categories}/>
+					</td>
+					<td>
+						<SongList
+							id="playlist" //droppable2
+							list={this.state.playlist}
+							getClass={getPlaylistClass} />
 					</td>
 				</tr>
 			</tbody>
 			</table>
 			<div class="form-group row">
-				<div className="col-lg-3 col-md-3 col-sm-3"><button type="button" className="btn btn-primary" onClick={this.handleDump} >Dump</button></div>
+				<div className="col-lg-3 col-md-3 col-sm-3"><button type="button" className="btn btn-primary" onClick={this.handleStopSong} >Stop Song</button></div>
 				<div className="col-lg-3 col-md-3 col-sm-3"><button type="button" className="btn btn-primary" onClick={this.handleRefresh} >Refresh</button></div>
 				<div className="col-lg-3 col-md-3 col-sm-3"><button type="button" className="btn btn-primary" onClick={this.handlePlay} >Play</button></div>
 			</div>

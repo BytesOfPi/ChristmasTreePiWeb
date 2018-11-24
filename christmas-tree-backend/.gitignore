@@ -1,5 +1,6 @@
 .gradle
 /build/
+/HOLD/
 !gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###

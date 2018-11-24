@@ -31,41 +31,77 @@ import edu.ky.cchs.degroff.pi.TreeVirtual;
 import edu.ky.cchs.degroff.util.TreeResourceUtil;
 import javazoom.jl.player.Player;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class TreeService.
+ */
 @ConfigurationProperties( prefix = "tree-service" )
 @Service
 public class TreeService
     {
+
+    /** The logger. */
     Logger logger = LoggerFactory.getLogger( TreeService.class );
 
+    /** The virtual. */
     private boolean virtual;
+
+    /** The sets. */
     private List<MusicSet> sets;
 
-    private long milliSync = 0;
+    /** The milli sync. */
+    private long milliSync;
 
+    /** The tree. */
     private ITree tree;
 
-    // private Future runningInstruct = null;
+    /** The running song. */
     private Future runningSong = null;
 
+    /** The running instructions. */
     private List<Future> runningInstructions = new ArrayList<>();
 
+    /** The resource util. */
     @Autowired
     private TreeResourceUtil resourceUtil;
 
+    /** The song queue. */
     @Autowired
     private ThreadPoolExecutor songQueue;
 
+    /**
+     * Generate a new thread pool
+     *
+     * @return the thread pool executor
+     */
     @Bean
     public ThreadPoolExecutor genThreadPool()
         {
         return (ThreadPoolExecutor) Executors.newFixedThreadPool( 1 );
         }
 
+    /**
+     * Play a single song. This method creates a playlist of 1 given the ID
+     *
+     * @param id
+     *            the id
+     * @return the tree response
+     */
     public TreeResponse playSong( int id )
         {
         return playList( Arrays.asList( new Integer[] { Integer.valueOf( id ) } ) );
         }
 
+    /**
+     * Stop last run.
+     *
+     * This method will attempt to: 1) Stop the currently running JPlayer 2)
+     * Interrupt the thread it's running on if it's still running 3) Loop through
+     * all the queued instruction threads and interrupt 4) Clear out the instruction
+     * queue.
+     *
+     * @return the tree response
+     */
     public TreeResponse stopLastRun()
         {
         // ----------------------------------------------------------------------
@@ -94,6 +130,14 @@ public class TreeService
         return new TreeResponse( "200", "Stopped song " );
         }
 
+    /**
+     * Stop running process.
+     *
+     * @param future
+     *            the future
+     * @param msg
+     *            the msg
+     */
     private void stopRunningProcess( Future future, String msg )
         {
         // ----------------------------------------------------------------------
@@ -114,6 +158,12 @@ public class TreeService
             }
         }
 
+    /**
+     * Run set thread.
+     *
+     * @param set
+     *            the set
+     */
     private void runSetThread( MusicSet set )
         {
         // ----------------------------------------------------------------------
@@ -168,6 +218,13 @@ public class TreeService
 
         }
 
+    /**
+     * Toggle light.
+     *
+     * @param channel
+     *            the channel
+     * @return the tree response
+     */
     public TreeResponse toggleLight( int channel )
         {
         StringBuilder msg = new StringBuilder( "Channel [" ).append( channel ).append( "] is turned " );
@@ -185,14 +242,22 @@ public class TreeService
         return new TreeResponse( "200", msg.toString() );
         }
 
+    /**
+     * Gets the songs.
+     *
+     * @return the songs
+     */
     public AvailableSongsResponse getSongs()
         {
         logger.info( "Getting songs..." );
         // ---------------------------------------------------------------
         // Loop through MusicSets and get Available songs
         AtomicInteger iCnt = new AtomicInteger( 1 );
-        List<AvailableSong> songs = sets.stream().map(
-                set -> new AvailableSong( set.getInstructionFile(), set.getInstructionFile(), iCnt.getAndIncrement() ) )
+        List<AvailableSong> songs = sets.stream()
+                // ---------------------------------------------------------------
+                // Map Set to JSON Response
+                .map( set -> new AvailableSong( set.getInstructionFile(), set.getTitle(), set.getCategory(),
+                        iCnt.getAndIncrement() ) )
                 .collect( Collectors.toList() );
 
         // ---------------------------------------------------------------
@@ -201,6 +266,9 @@ public class TreeService
 
         }
 
+    /**
+     * Startup.
+     */
     public void startup()
         {
         logger.info( "Initializing... " );
@@ -216,6 +284,9 @@ public class TreeService
         logger.info( "Initialization Complete " );
         }
 
+    /**
+     * Load music sets.
+     */
     private void loadMusicSets()
         {
         // ---------------------------------------------------------------
@@ -235,6 +306,9 @@ public class TreeService
         } );
         }
 
+    /**
+     * Shutdown.
+     */
     public void shutdown()
         {
         logger.info( "Shutting down... " );
@@ -242,16 +316,13 @@ public class TreeService
         logger.info( "Shutting down Complete " );
         }
 
-    public boolean isVirtual()
-        {
-        return virtual;
-        }
-
-    public void setVirtual( boolean virtual )
-        {
-        this.virtual = virtual;
-        }
-
+    /**
+     * Milli sync.
+     *
+     * @param milliSync
+     *            the milli sync
+     * @return the tree response
+     */
     public TreeResponse milliSync( long milliSync )
         {
         StringBuilder msg = new StringBuilder( "Added [" ).append( milliSync ).append( "] milliseconds to pad " );
@@ -260,6 +331,11 @@ public class TreeService
         return new TreeResponse( "200", msg.toString() );
         }
 
+    /**
+     * Refresh.
+     *
+     * @return the tree response
+     */
     public TreeResponse refresh()
         {
         StringBuilder msg = new StringBuilder( "Refreshsed music sets " );
@@ -268,6 +344,13 @@ public class TreeService
         return new TreeResponse( "200", msg.toString() );
         }
 
+    /**
+     * Play list.
+     *
+     * @param ids
+     *            the ids
+     * @return the tree response
+     */
     public TreeResponse playList( List<Integer> ids )
         {
         // ----------------------------------------------------------------------
@@ -292,5 +375,36 @@ public class TreeService
         } );
 
         return new TreeResponse( "200", "Loaded songs into queue." );
+        }
+
+    /**
+     * Checks if is virtual.
+     *
+     * @return true, if is virtual
+     */
+    public boolean isVirtual()
+        {
+        return virtual;
+        }
+
+    /**
+     * Sets the virtual.
+     *
+     * @param virtual
+     *            the new virtual
+     */
+    public void setVirtual( boolean virtual )
+        {
+        this.virtual = virtual;
+        }
+
+    public long getMilliSync()
+        {
+        return milliSync;
+        }
+
+    public void setMilliSync( long milliSync )
+        {
+        this.milliSync = milliSync;
         }
     }

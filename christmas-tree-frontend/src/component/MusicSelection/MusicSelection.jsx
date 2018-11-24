@@ -29,7 +29,7 @@ class MusicSelection extends React.Component {
 	loadSongs() {
 		fetch('api/tree/song/get')
 			.then(res => ( res.ok ) ? res.json() : [{name: 'FAILED TO LOAD'}])
-			.then(data => {  console.log(data); this.setState({songs: data.songs});
+			.then(data => {  console.log(data); this.setState({songs: data.categories.Miscellaneous});
 			})
 			.catch( error => console.log(error) );
 	}
@@ -74,11 +74,9 @@ class MusicSelection extends React.Component {
 			.then(data => { 
 				//---------------------------------------------------------------------
 				// Refresh dropdown
-				console.log(data);
 				this.loadSongs();
 			})
 			.catch( error => console.log(error) );
-
 	}
 
 	//---------------------------------------------------------------------
