@@ -19,6 +19,7 @@ public class Instruction
         // 1) The time of the instruction
         // 2) The strands to turn on
         // 3) The strands to turn off
+        input = input.replaceAll( "\t", ":" );
         String[] instruction = input.split( ":" );
         time = Long.parseLong( instruction[0] );
 
