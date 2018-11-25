@@ -41,11 +41,13 @@ tree-service:
     - "classpath*:**/instructions/*.txt"
     - "file:*.txt"
     - "file:./**/instructions/*.txt"
+    - "file:F:/instructions/*.txt"
   loadMusic:
     - "classpath*:**/music/*.mp3"
     - "classpath*:**/*.mp3"
     - "file:*.mp3"
     - "file:./**/music/*.mp3"
+    - "file:F:/music/**/*.mp3"
 
 ---
 

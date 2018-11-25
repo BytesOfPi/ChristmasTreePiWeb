@@ -63,8 +63,6 @@ class UploadFiles extends React.Component {
 		return data.map(alert => this.generateAlert(alert));
 	}
 
-
-
 	render() {
 		return (
 		<fieldset>

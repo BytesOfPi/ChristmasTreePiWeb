@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import SongList from './SongList';
 
 const styleShow = {display: 'block'};
 const styleHide = {display: 'none'};
 
-const getItemClass = (isDragging) => (
-	isDragging ? 'card text-white bg-primary mb-3' : 'card text-white bg-success mb-3'
-);
-
-
+/**
+ * SongSelections Component
+ * 
+ * This component allows the user to select a song list by category.  When there is a lot of
+ * songs to choose from, it allows for an easier visual experience to hide all categories of
+ * songs except the category of songs you want to select.
+ */
 class SongSelections extends Component {
 	constructor(props) {
         super(props);
@@ -53,7 +56,7 @@ class SongSelections extends Component {
             return <div id={`list_${entry[0].toLowerCase()}`} style={divStyle}><SongList
             id={entry[0].toLowerCase()} //droppable2
             list={entry[1]}
-            getClass={getItemClass} /></div>;
+            getClass={this.props.getClass} /></div>;
         });
     }
 
@@ -76,4 +79,10 @@ class SongSelections extends Component {
         );
     }
 }
+
+SongSelections.propTypes = {
+    categories: PropTypes.object.isRequired,
+    getClass: PropTypes.func.isRequired
+};
+
 export default SongSelections;
