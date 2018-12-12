@@ -187,11 +187,25 @@ public class TreeService
         // ----------------------------------------------------------------------
         // Start the timer
         long startTime = System.currentTimeMillis();
+        int playerSync = 0;
 
         // ----------------------------------------------------------------------
         // Continue to loop while there are instructions
         while ( iCnt <= iSize )
             {
+
+            // ----------------------------------------------------------------------
+            // If this is the first time and we haven't synched music to start of run
+            // let's do that...
+            if ( playerSync == 0 )
+                {
+                startTime = System.currentTimeMillis();
+                playerSync = Audio.getTime();
+                if ( playerSync != 0 )
+                    {
+                    startTime -= playerSync;
+                    }
+                }
             // ----------------------------------------------------------------------
             // if the next instruction is now or passed...
             if ( nextTime <= System.currentTimeMillis() - startTime )

@@ -49,4 +49,10 @@ public class Audio
         return f;
         }
 
+    public static int getTime()
+        {
+        if ( player != null ) { return player.getPosition(); }
+        System.out.println( "1" );
+        return 0;
+        }
     }
