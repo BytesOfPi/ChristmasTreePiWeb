@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE:default}
   servlet:
     multipart:
       max-file-size: 5MB
@@ -33,18 +33,21 @@ management:
 ---
 
 spring:
-  profiles: dev
+  profiles: default
 tree-service:
   virtual: true
+  milliSync: -650
   loadInstruct:
     - "classpath*:**/instructions/*.txt"
     - "file:*.txt"
-    - "file:./instructions/*.txt"
+    - "file:./**/instructions/*.txt"
+    - "file:F:/instructions/*.txt"
   loadMusic:
     - "classpath*:**/music/*.mp3"
     - "classpath*:**/*.mp3"
     - "file:*.mp3"
-    - "file:./music/*.mp3"
+    - "file:./**/music/*.mp3"
+    - "file:F:/music/**/*.mp3"
 
 ---
 
@@ -52,12 +55,15 @@ spring:
   profiles: pi
 tree-service:
   virtual: false
+  milliSync: -650
   loadInstruct:
     - "classpath*:**/instructions/*.txt"
     - "file:*.txt"
     - "file:./instructions/*.txt"
+    - "file:/media/pi/**/instructions/**/*.txt"
   loadMusic:
     - "classpath*:**/music/*.mp3"
     - "classpath*:**/*.mp3"
     - "file:*.mp3"
     - "file:./music/*.mp3"
+    - "file:/media/pi/**/music/**/*.mp3"

@@ -23,30 +23,36 @@ public class Audio
         return player;
         }
 
-    public static Future playMP3New( Resource mp3Resource, Future runningSong )
+    public static ThreadPoolExecutor getExecutor()
         {
-        logger.info( "Running new song [{}]", mp3Resource.getFilename() );
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool( 1 );
+        return (ThreadPoolExecutor) Executors.newFixedThreadPool( 1 );
+        }
+
+    public static Future playMP3New( Resource mp3Resource )
+        {
+        ThreadPoolExecutor executor = getExecutor();
 
         Future f = executor.submit( () -> {
         try ( InputStream mp3In = mp3Resource.getInputStream() )
             {
+            logger.info( "Running new song [{}]", mp3Resource.getFilename() );
             player = new javazoom.jl.player.Player( mp3In );
             player.play();
             logger.info( "DONE MUSIC [{}]", mp3Resource.getFilename() );
             }
         catch ( JavaLayerException | IOException ex )
             {
-            ex.printStackTrace();
+            logger.error( "Error occurred when playing song...", ex );
             }
         } );
         executor.shutdown();
         return f;
         }
 
-    public static Future playMP3New( Resource mp3Resource )
+    public static int getTime()
         {
-        return playMP3New( mp3Resource, null );
+        if ( player != null ) { return player.getPosition(); }
+        System.out.println( "1" );
+        return 0;
         }
-
     }

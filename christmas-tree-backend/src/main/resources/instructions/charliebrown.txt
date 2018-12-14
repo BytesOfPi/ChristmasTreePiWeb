@@ -1,5 +1,7 @@
 charliebrown.mp3
 true
+Charlie Brown - Christmas is Coming
+Classic
 0:1,2,3,4,5,6,7,8::[START]
 2263:1,2:3,4,5,6,7,8: [VERSE 01]
 2967:3:: [VERSE 01]

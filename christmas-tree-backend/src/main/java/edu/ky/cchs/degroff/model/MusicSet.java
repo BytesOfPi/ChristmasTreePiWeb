@@ -16,6 +16,8 @@ public class MusicSet
     private Logger logger = LoggerFactory.getLogger( MusicSet.class );
     private String instructionFile;
     private String musicFile;
+    private String title;
+    private String category;
     private boolean isVirtual;
     private List<Instruction> instructions = new ArrayList<>();
     private Resource musicResource;
@@ -40,16 +42,31 @@ public class MusicSet
     private void loadInputStream( InputStream resourceInputStream )
         {
         Scanner sc = new Scanner( resourceInputStream );
-        // File file = new File( instructionFile );
-        // Scanner sc = new Scanner( file );
 
         // ----------------------------------------------------------------------
         // The first line should be where the MP3 file is found
         musicFile = sc.nextLine().trim();
 
         // ----------------------------------------------------------------------
-        // The first line should be where the MP3 file is found
+        // The next line is outdated - it used to cue when the tree was actual
+        // or virtual
         setVirtual( Boolean.parseBoolean( sc.nextLine() ) );
+
+        // ----------------------------------------------------------------------
+        // Grab the next line. If it has a colon in it, it's an old instruction
+        // otherwise, it is newer and has the Title and Category in it
+        String check = sc.nextLine().trim();
+        if ( check.contains( ":" ) )
+            {
+            title = instructionFile;
+            category = "Miscellaneous";
+            instructions.add( new Instruction( check ) );
+            }
+        else
+            {
+            title = check;
+            category = sc.nextLine().trim();
+            }
 
         // ----------------------------------------------------------------------
         // The rest of the lines are instructions to add
@@ -97,6 +114,26 @@ public class MusicSet
     public void setInstructionFile( String instructionFile )
         {
         this.instructionFile = instructionFile;
+        }
+
+    public String getCategory()
+        {
+        return category;
+        }
+
+    public void setCategory( String category )
+        {
+        this.category = category;
+        }
+
+    public String getTitle()
+        {
+        return title;
+        }
+
+    public void setTitle( String title )
+        {
+        this.title = title;
         }
 
     }

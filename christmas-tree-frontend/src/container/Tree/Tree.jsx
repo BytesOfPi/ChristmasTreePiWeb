@@ -1,7 +1,8 @@
 import React from 'react';
 import LightSelection from '../../component/LightSelection/LightSelection';
-import MusicSelection from '../../component/MusicSelection/MusicSelection';
-import Maint from '../../component/Maint/Maint';
+// import MusicSelection from '../../component/MusicSelection/MusicSelection';
+import Maint from '../Maint/Maint';
+import PlayList from '../PlayList/PlayList';
 
 /* openTab()
  * This function handles showing / hiding tab content on the admin page based on
@@ -27,10 +28,12 @@ function openTab(event) {
 	}
 }
 
-/* Music
- * This component is a simple tab framework allowing the admin to tab between administrative
- * functions.
- *
+
+/**
+ * Tree Container
+ * 
+ * This container is the primary layout for the application.  Essentially it contains the tabs
+ * for all necessary controls
  */
 const Tree = () => (
 	<div className="bs-docs-section">
@@ -41,8 +44,13 @@ const Tree = () => (
 						<li class="nav-item">
 							<a id="tabHome" class="nav-link active" data-toggle="tab" href="#home" onClick={openTab}>Light Selection</a>
 						</li>
+						{
+						// <li class="nav-item">
+						//	<a id="tabMusic" class="nav-link" data-toggle="tab" href="#profile" onClick={openTab}>Music Selection</a>
+						// </li>
+						}
 						<li class="nav-item">
-							<a id="tabTeams" class="nav-link" data-toggle="tab" href="#profile" onClick={openTab}>Music Selection</a>
+							<a id="tabPlayList" class="nav-link" data-toggle="tab" href="#profile" onClick={openTab}>Play List</a>
 						</li>
 						<li class="nav-item">
 							<a id="tabMaint" class="nav-link" href="#" onClick={openTab}>Maint</a>
@@ -52,8 +60,13 @@ const Tree = () => (
 						<div id="tabCHome" class="tab-pane fade show active">
 							<LightSelection />
 						</div>
-						<div id="tabCTeams" class="tab-pane fade">
-							<MusicSelection />
+						{
+						//<div id="tabCMusic" class="tab-pane fade">
+						//	<MusicSelection />
+						//</div>
+						}
+						<div id="tabCPlayList" class="tab-pane fade">
+							<PlayList />
 						</div>
 						<div id="tabCMaint" class="tab-pane fade">
 							<Maint />
