@@ -13,7 +13,7 @@ server:
     accesslog:
       buffered: true
       directory: ${TOMCAT_ACCESSLOG_DIR:e:/temp}
-      enabled: ${TOMCAT_ACCESSLOG_ENABLED:true}
+      enabled: ${TOMCAT_ACCESSLOG_ENABLED:false}
       file-date-format: .yyyy-MM-dd
       pattern: "%h %l %u %t '%r' %s %b %D"
       prefix: access_log
@@ -36,7 +36,8 @@ spring:
   profiles: default
 tree-service:
   virtual: true
-  milliSync: -650
+  # milliSync: -650
+  milliSync: 0
   loadInstruct:
     - "classpath*:**/instructions/*.txt"
     - "file:*.txt"
@@ -55,7 +56,8 @@ spring:
   profiles: pi
 tree-service:
   virtual: false
-  milliSync: -650
+  # milliSync: -650
+  milliSync: 0
   loadInstruct:
     - "classpath*:**/instructions/*.txt"
     - "file:*.txt"

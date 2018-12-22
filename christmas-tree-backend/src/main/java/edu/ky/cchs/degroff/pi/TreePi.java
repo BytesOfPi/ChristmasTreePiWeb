@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.pi4j.io.gpio.GpioController;
@@ -16,6 +18,8 @@ import com.pi4j.io.gpio.RaspiPin;
 @Component
 public class TreePi implements ITree
     {
+    /** The logger. */
+    Logger logger = LoggerFactory.getLogger( TreePi.class );
 
     private List<GpioPinDigitalOutput> channelPinMap = null;
     private GpioController gpio;
@@ -47,54 +51,11 @@ public class TreePi implements ITree
             }
         }
 
-    private GpioPinDigitalOutput createPin( Pin pin, String name )
-        {
-        // provision gpio pin and turn off
-        final GpioPinDigitalOutput gpioPDO = gpio.provisionDigitalOutputPin( pin, name, PinState.LOW );
-
-        // set shutdown state for this pin
-        gpioPDO.setShutdownOptions( true, PinState.LOW );
-
-        return gpioPDO;
-        }
-
     @Override
-    public void turnStrandOn( int channel )
+    public boolean isStrandOn( int channel )
         {
-        if ( channel < 0 || channel > channelPinMap.size() ) { return; }
-
         GpioPinDigitalOutput gpiodo = channelPinMap.get( channel - 1 );
-        gpiodo.setState( PinState.HIGH );
-        System.out.println( gpiodo.getName() + ": ON" );
-        // try
-        // {
-        // Thread.sleep( 80 );
-        // }
-        // catch ( InterruptedException e )
-        // {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        }
-
-    @Override
-    public void turnStrandOff( int channel )
-        {
-        if ( channel < 0 || channel > channelPinMap.size() ) { return; }
-
-        GpioPinDigitalOutput gpiodo = channelPinMap.get( channel - 1 );
-
-        gpiodo.setState( PinState.LOW );
-        System.out.println( gpiodo.getName() + ": OFF" );
-        // try
-        // {
-        // Thread.sleep( 80 );
-        // }
-        // catch ( InterruptedException e )
-        // {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
+        return gpiodo.getState().equals( PinState.HIGH );
         }
 
     @Override
@@ -112,10 +73,35 @@ public class TreePi implements ITree
         }
 
     @Override
-    public boolean isStrandOn( int channel )
+    public void turnStrandOff( int channel )
         {
+        if ( channel < 0 || channel > channelPinMap.size() ) { return; }
+
         GpioPinDigitalOutput gpiodo = channelPinMap.get( channel - 1 );
-        return gpiodo.getState().equals( PinState.HIGH );
+
+        gpiodo.setState( PinState.LOW );
+        logger.debug( "{} : OFF", gpiodo.getName() );
+        }
+
+    @Override
+    public void turnStrandOn( int channel )
+        {
+        if ( channel < 0 || channel > channelPinMap.size() ) { return; }
+
+        GpioPinDigitalOutput gpiodo = channelPinMap.get( channel - 1 );
+        gpiodo.setState( PinState.HIGH );
+        logger.debug( "{} : ON", gpiodo.getName() );
+        }
+
+    private GpioPinDigitalOutput createPin( Pin pin, String name )
+        {
+        // provision gpio pin and turn off
+        final GpioPinDigitalOutput gpioPDO = gpio.provisionDigitalOutputPin( pin, name, PinState.LOW );
+
+        // set shutdown state for this pin
+        gpioPDO.setShutdownOptions( true, PinState.LOW );
+
+        return gpioPDO;
         }
 
     }

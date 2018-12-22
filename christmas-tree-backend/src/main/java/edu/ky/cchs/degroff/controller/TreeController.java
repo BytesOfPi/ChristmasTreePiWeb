@@ -62,12 +62,13 @@ public class TreeController
     @PostMapping( value = "/song/playlist" )
     public TreeResponse playList( @RequestBody List<Integer> request )
         {
-        return svc.playList( request );
+        return svc.playList( request, true );
         }
 
     @GetMapping( value = "/song/stop" )
     public TreeResponse stopLastRun()
         {
+        svc.stopPlayList();
         return svc.stopLastRun();
         }
 

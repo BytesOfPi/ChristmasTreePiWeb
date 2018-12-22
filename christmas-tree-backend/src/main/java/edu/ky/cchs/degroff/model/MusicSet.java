@@ -27,7 +27,7 @@ public class MusicSet
         // ----------------------------------------------------------------------
         // Use Scanner to read in the text file
         instructionFile = resource.getFilename();
-        System.out.println( "Reading instructions [" + resource.getURI() + "]" );
+        logger.info( "Reading instructions [" + resource.getURI() + "]" );
         try ( InputStream resourceInputStream = resource.getInputStream() )
             {
             loadInputStream( resourceInputStream );
@@ -37,6 +37,66 @@ public class MusicSet
         logger.info( "Loaded [{}] [{}] [{}]", resource.getFilename(), musicFile,
                 musicResourceMap.keySet().contains( musicFile ) );
 
+        }
+
+    public String getCategory()
+        {
+        return category;
+        }
+
+    public String getInstructionFile()
+        {
+        return instructionFile;
+        }
+
+    public List<Instruction> getInstructions()
+        {
+        return instructions;
+        }
+
+    public String getMusicFile()
+        {
+        return musicFile;
+        }
+
+    public Resource getMusicResource()
+        {
+        return musicResource;
+        }
+
+    public String getTitle()
+        {
+        return title;
+        }
+
+    public boolean isVirtual()
+        {
+        return isVirtual;
+        }
+
+    public void setCategory( String category )
+        {
+        this.category = category;
+        }
+
+    public void setInstructionFile( String instructionFile )
+        {
+        this.instructionFile = instructionFile;
+        }
+
+    public void setMusicResource( Resource musicResource )
+        {
+        this.musicResource = musicResource;
+        }
+
+    public void setTitle( String title )
+        {
+        this.title = title;
+        }
+
+    public void setVirtual( boolean isVirtual )
+        {
+        this.isVirtual = isVirtual;
         }
 
     private void loadInputStream( InputStream resourceInputStream )
@@ -74,66 +134,6 @@ public class MusicSet
             {
             instructions.add( new Instruction( sc.nextLine().trim() ) );
             }
-        }
-
-    public Resource getMusicResource()
-        {
-        return musicResource;
-        }
-
-    public void setMusicResource( Resource musicResource )
-        {
-        this.musicResource = musicResource;
-        }
-
-    public String getMusicFile()
-        {
-        return musicFile;
-        }
-
-    public List<Instruction> getInstructions()
-        {
-        return instructions;
-        }
-
-    public boolean isVirtual()
-        {
-        return isVirtual;
-        }
-
-    public void setVirtual( boolean isVirtual )
-        {
-        this.isVirtual = isVirtual;
-        }
-
-    public String getInstructionFile()
-        {
-        return instructionFile;
-        }
-
-    public void setInstructionFile( String instructionFile )
-        {
-        this.instructionFile = instructionFile;
-        }
-
-    public String getCategory()
-        {
-        return category;
-        }
-
-    public void setCategory( String category )
-        {
-        this.category = category;
-        }
-
-    public String getTitle()
-        {
-        return title;
-        }
-
-    public void setTitle( String title )
-        {
-        this.title = title;
         }
 
     }

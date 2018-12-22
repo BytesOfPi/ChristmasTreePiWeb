@@ -18,14 +18,27 @@ public class Audio
 
     private static javazoom.jl.player.Player player;
 
+    public static ThreadPoolExecutor getExecutor()
+        {
+        return (ThreadPoolExecutor) Executors.newFixedThreadPool( 1 );
+        }
+
     public static javazoom.jl.player.Player getPlayer()
         {
         return player;
         }
 
-    public static ThreadPoolExecutor getExecutor()
+    public static int getTime()
         {
-        return (ThreadPoolExecutor) Executors.newFixedThreadPool( 1 );
+        if ( player != null ) { return player.getPosition(); }
+        logger.info( "1" );
+        // System.out.println( "1" );
+        return 0;
+        }
+
+    public static boolean isComplete()
+        {
+        return player.isComplete();
         }
 
     public static Future playMP3New( Resource mp3Resource )
@@ -47,12 +60,5 @@ public class Audio
         } );
         executor.shutdown();
         return f;
-        }
-
-    public static int getTime()
-        {
-        if ( player != null ) { return player.getPosition(); }
-        System.out.println( "1" );
-        return 0;
         }
     }

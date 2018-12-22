@@ -37,9 +37,29 @@ public class TreeResourceUtil
         return getResourceMap( loadInstruct );
         }
 
+    public List<String> getLoadInstruct()
+        {
+        return loadInstruct;
+        }
+
+    public List<String> getLoadMusic()
+        {
+        return loadMusic;
+        }
+
     public Map<String, Resource> getMusicResources()
         {
         return getResourceMap( loadMusic );
+        }
+
+    public void setLoadInstruct( List<String> loadInstruct )
+        {
+        this.loadInstruct = loadInstruct;
+        }
+
+    public void setLoadMusic( List<String> loadMusic )
+        {
+        this.loadMusic = loadMusic;
         }
 
     private Map<String, Resource> getResourceMap( List<String> loadClasspath )
@@ -56,16 +76,6 @@ public class TreeResourceUtil
 
         }
 
-    // public static InputStream getResource( String val ) throws IOException
-    // {
-    // System.out.println( "Attempting to get resource [" + val + "]" );
-    // Resource resource = new ClassPathResource( val );
-    // if ( resource.exists() ) { return resource.getInputStream(); }
-    // File initialFile = new File( val );
-    // return new FileInputStream( initialFile );
-    //
-    // }
-
     private Resource[] getResources( String pattern )
         {
         try
@@ -77,25 +87,5 @@ public class TreeResourceUtil
             logger.info( "Trouble getting resources for [{}]", pattern );
             }
         return new Resource[] {};
-        }
-
-    public List<String> getLoadMusic()
-        {
-        return loadMusic;
-        }
-
-    public void setLoadMusic( List<String> loadMusic )
-        {
-        this.loadMusic = loadMusic;
-        }
-
-    public List<String> getLoadInstruct()
-        {
-        return loadInstruct;
-        }
-
-    public void setLoadInstruct( List<String> loadInstruct )
-        {
-        this.loadInstruct = loadInstruct;
         }
     }
